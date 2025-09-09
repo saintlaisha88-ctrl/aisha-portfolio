@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio - Aisha Veda Saint Fleur</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <h1>Aisha Veda Saint Fleur</h1>
+      <h2>Technologie pour une cause</h2>
+      <nav>
+        <ul>
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#projects">Projets</a></li>
+          <li><a href="#skills">Compétences</a></li>
+          <li><a href="cv.html">Mon CV</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section id="about" class="section">
+    <div class="container">
+      <h2>Développeuse Web & Créatrice d’Expériences Digitales</h2>
+      <p>
+        “J’utilise la technologie pour éveiller les consciences, informer et inspirer le changement.”
+      </p>
+      <p>
+        Je suis une développeuse web en formation, passionnée par la création de sites et d’expériences interactives qui allient design moderne et utilité sociale.
+        Mon objectif ? Utiliser la technologie comme un outil d’impact positif. Que ce soit pour sensibiliser aux enjeux de cybersécurité, de santé ou de climat, j’aime transformer des idées en projets concrets et ludiques.
+      </p>
+      <a href="cv.html" class="btn">Voir mon CV</a>
+    </div>
+  </section>
+
+  <section id="projects" class="section">
+    <div class="container">
+      <h2>Mes Projets</h2>
+      <div class="projects-grid">
+        <div class="project-card">
+          <h3>Projet Athéna</h3>
+          <p>Mini-jeu interactif qui couvre la cybersécurité, les données PII, PHI et la protection humanitaire. Il met au défi les joueurs de prendre des décisions qui protègent les données sensibles et l'environnement, aboutissant à un score final et à un certificat basé sur leur performance.</p>
+          <div class="tags">#Cybersécurité #Climat #HTML #CSS #JavaScript</div>
+          <a href="ProjectAthena.html" class="btn">Voir le projet</a>
+        </div>
+        <div class="project-card">
+          <h3>Cybersecurity Game</h3>
+          <p>Un quiz qui teste les connaissances des joueurs en matière de sécurité en ligne. Il aide les joueurs à identifier et à éviter les menaces en ligne courantes et à devenir de meilleurs agents de cybersécurité.</p>
+          <div class="tags">#Quiz #Sécurité #JavaScript</div>
+          <a href="cybersecurity_game.html" class="btn">Voir le projet</a>
+        </div>
+        <div class="project-card">
+          <h3>Cycle Sync</h3>
+          <p>Un quiz interactif conçu pour éduquer les utilisateurs sur le cycle menstruel et ses différentes phases. Il fournit des informations pour aider les gens à optimiser leur bien-être en fonction du cycle.</p>
+          <div class="tags">#Santé #Éducation #Quiz #HTML #CSS #JavaScript</div>
+          <a href="cycle-sync.html" class="btn">Voir le projet</a>
+        </div>
+        <div class="project-card">
+          <h3>EcoWeb Quest</h3>
+          <p>Mini-jeu qui enseigne aux joueurs comment réduire son empreinte carbone numérique. Il présente différents scénarios où les joueurs doivent faire des choix respectueux de l'environnement en naviguant sur le web.</p>
+          <div class="tags">#Écologie #WebDesign #Sensibilisation</div>
+          <a href="ecoweb.html" class="btn">Voir le projet</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="section">
+    <div class="container">
+      <h2>Compétences</h2>
+      <div class="skills-container">
+        <div class="skill-card">
+          <i class="fab fa-html5 icon"></i>
+          <p>HTML5</p>
+        </div>
+        <div class="skill-card">
+          <i class="fab fa-css3-alt icon"></i>
+          <p>CSS3</p>
+        </div>
+        <div class="skill-card">
+          <i class="fab fa-js-square icon"></i>
+          <p>JavaScript</p>
+        </div>
+        <div class="skill-card">
+            <i class="fas fa-briefcase icon"></i>
+            <p>Project Management</p>
+        </div>
+        <div class="skill-card">
+          <i class="fas fa-database icon"></i>
+          <p>Bases de données</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <div class="container">
+      <h2>Contact</h2>
+      <p>N'hésitez pas à me contacter pour toute collaboration ou opportunité.</p>
+      <form id="contact-form" action="https://formspree.io/f/f_your_unique_id" method="POST">
+        <label for="name">Nom :</label>
+        <input type="text" id="name" name="name" required>
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="_replyto" required>
+        <label for="phone">Numéro de téléphone :</label>
+        <input type="tel" id="phone" name="phone">
+        <label for="message">Message :</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+        <button type="submit">Envoyer</button>
+      </form>
+      <div id="confirmation-message">
+        Votre demande a été envoyée avec succès. Je vous répondrai dans les plus brefs délais !
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Aisha Veda Saint Fleur. Tous droits réservés.</p>
+    </div>
+  </footer>
+  
+  <script src="script.js"></script>
+</body>
+</html>
