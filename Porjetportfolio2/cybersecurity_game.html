@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CyberSecu - Le Jeu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f7;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .audio-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px 10px;
+        }
+
+        .return-button-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            z-index: 1000;
+        }
+        
+        .return-button-fixed:hover {
+            background-color: #0056b3;
+        }
+
+        h1 {
+            color: #004085;
+        }
+
+        .intro, .game-section {
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            max-width: 700px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            text-align: left;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .intro-text {
+            background-color: #cce5ff;
+            border-left: 5px solid #004085;
+            padding: 15px;
+            line-height: 1.6;
+            border-radius: 10px;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+            max-width: 700px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .game-section {
+            display: none;
+        }
+        
+        .game-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        input[type="password"], input[type="text"] {
+            padding: 10px;
+            width: calc(100% - 22px);
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .password-strength-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .password-strength-bar div {
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .info-box {
+            background-color: #e2f0e4;
+            border-left: 5px solid #28a745;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        
+        .info-box.incorrect {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+
+
+        .question {
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .question.show {
+            opacity: 1;
+        }
+
+        .options button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .options button:hover {
+            background-color: #e2e6ea;
+            transform: scale(1.01);
+        }
+
+        .options button.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .options button.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .next-step-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .badges {
+            margin-top: 20px;
+            font-size: 2em;
+        }
+
+        ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        #certificate {
+            background-color: #ffffff;
+            border: 2px solid #004085;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+        
+        #certificate h2 {
+            color: #28a745;
+            font-size: 2em;
+        }
+
+        #certificate p {
+            font-size: 1.2em;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .intro, .game-section {
+                padding: 15px;
+                margin: 10px auto;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            #certificate {
+                padding: 20px;
+            }
+            
+            .audio-toggle {
+                top: 10px;
+                right: 10px;
+                font-size: 20px;
+                padding: 3px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="return-button-fixed">Retour au portfolio</a>
+    <button class="audio-toggle" id="audioToggle">🎶</button>
+    <h1>🔒 CyberSecu - Le Jeu</h1>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="intro-section" class="game-section active">
+        <div class="intro-text">
+            <h2>Bienvenue, jeune Cyber Agent !</h2>
+            <p>Votre mission, si vous l'acceptez, est de prouver votre valeur dans le domaine de la cybersécurité. Réussissez les missions suivantes pour obtenir votre certification d'agent.</p>
+            <p>Pour commencer, veuillez entrer votre nom d'agent :</p>
+            <input type="text" id="agentNameInput" placeholder="Votre nom ici">
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="startMission1()">Démarrer la Mission 1</button>
+        </div>
+    </div>
+
+    <div id="mission1-section" class="game-section">
+        <h2>Mission 1 : Le mot de passe de la console</h2>
+        <p>Votre première mission est de créer un mot de passe infaillible pour notre console sécurisée. Plus il est fort, plus vous gagnez de points.</p>
+        <input type="password" id="passwordInput" placeholder="Entrez un mot de passe ici">
+        <button id="submitPasswordBtn" onclick="submitPassword()">Soumettre</button>
+        <div class="password-strength-bar" id="strengthBar">
+            <div id="barFill"></div>
+        </div>
+        <div id="passwordInfo"></div>
+        <div id="password-tips-section" class="hidden">
+            <h3>Conseils pour des mots de passe solides</h3>
+            <ul>
+                <li>Utilisez une **phrase de passe** (ex: `L@voiturebleueEst33%rapide!`) plutôt qu'un mot unique.</li>
+                <li>Ne réutilisez **jamais** le même mot de passe pour plusieurs comptes.</li>
+                <li>Utilisez un **gestionnaire de mots de passe** pour générer et stocker des mots de passe complexes en toute sécurité.</li>
+                <li>Activez la **double authentification (MFA/2FA)** partout où c'est possible.</li>
+            </ul>
+            <button class="next-step-btn" id="nextMission1Btn" onclick="startMission2()">Passer à la Mission 2</button>
+        </div>
+    </div>
+
+    <div id="mission2-section" class="game-section">
+        <h2>Mission 2 : Le test de réflexes</h2>
+        <p>Prouvez vos réflexes de cyberdéfense en répondant à ces questions. Chaque bonne réponse vous rapporte des points d'agent !</p>
+        <div id="quiz-question"></div>
+        <div id="quiz-feedback"></div>
+        <div style="text-align: right; margin-top: 20px;">
+            <button id="prevBtn" onclick="prevQuestion()" style="display: none;">← Précédent</button>
+            <button id="nextBtn" onclick="nextQuestion()" style="display: none;">Suivant →</button>
+        </div>
+    </div>
+
+    <div id="final-score-section" class="game-section">
+        <h2>Mission accomplie ! Rapport final</h2>
+        <p>Votre score final : <span id="finalScoreValue">0</span> points</p>
+        <p>Meilleur score : <span id="highScoreValue">0</span> points</p>
+        <div id="score-description"></div>
+        <div id="badges-container" class="badges"></div>
+        <div id="certificate" class="hidden">
+            <h2>Certificat de Cyber Agent</h2>
+            <p>Ce certificat est remis à</p>
+            <p><strong><span id="certifiedAgentName"></span></strong></p>
+            <p>pour avoir complété avec succès toutes les missions de formation et obtenu un score de <span id="certifiedAgentScore"></span> points.</p>
+            <p>Félicitations pour votre engagement envers la sécurité numérique !</p>
+        </div>
+    </div>
+
+    <audio id="successSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
+    <audio id="failSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" preload="auto"></audio>
+    <audio id="quizSound" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" preload="auto" loop></audio>
+
+    <script>
+        const progressBar = document.getElementById('progressBar');
+        const introSection = document.getElementById('intro-section');
+        const mission1Section = document.getElementById('mission1-section');
+        const mission2Section = document.getElementById('mission2-section');
+        const finalScoreSection = document.getElementById('final-score-section');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+        const strengthBar = document.getElementById('strengthBar');
+        const barFill = document.getElementById('barFill');
+        const passwordInfo = document.getElementById('passwordInfo');
+        const quizQuestionDiv = document.getElementById('quiz-question');
+        const feedbackDiv = document.getElementById('quiz-feedback');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const passwordTipsSection = document.getElementById('password-tips-section');
+        const finalScoreValue = document.getElementById('finalScoreValue');
+        const highScoreValue = document.getElementById('highScoreValue');
+        const scoreDescription = document.getElementById('score-description');
+        const badgesContainer = document.getElementById('badges-container');
+        const nextMission1Btn = document.getElementById('nextMission1Btn');
+        const agentNameInput = document.getElementById('agentNameInput');
+        const certificate = document.getElementById('certificate');
+        const certifiedAgentName = document.getElementById('certifiedAgentName');
+        const certifiedAgentScore = document.getElementById('certifiedAgentScore');
+        const successSound = document.getElementById('successSound');
+        const failSound = document.getElementById('failSound');
+        const audioToggle = document.getElementById('audioToggle');
+        let isSoundEnabled = true;
+
+        successSound.volume = 0.5;
+        failSound.volume = 0.5;
+
+        audioToggle.addEventListener('click', () => {
+            isSoundEnabled = !isSoundEnabled;
+            audioToggle.innerText = isSoundEnabled ? '🎶' : '🔇';
+            if (!isSoundEnabled) {
+                successSound.pause();
+                successSound.currentTime = 0;
+                failSound.pause();
+                failSound.currentTime = 0;
+            }
+        });
+
+        function playSound(sound) {
+            if (isSoundEnabled) {
+                sound.play();
+            }
+        }
+
+        let agentName = '';
+        let totalScore = 0;
+        let quizScore = 0;
+        let badges = new Set();
+        let currentQuizIndex = 0;
+        let highScore = localStorage.getItem('highScore') || 0;
+        highScoreValue.innerText = highScore;
+
+        let quizQuestions = [
+            {
+                q: "Vous recevez un e-mail qui semble provenir de votre banque, vous demandant de mettre à jour vos informations de connexion via un lien. Que faites-vous ?",
+                options: [
+                    { text: "Je clique sur le lien et je mets à jour mes informations.", correct: false, info: "❌ Mauvais réflexe ! C'est une tentative de 'phishing'. Ne cliquez jamais sur des liens dans des e-mails suspects. Rendez-vous directement sur le site officiel de votre banque." },
+                    { text: "Je réponds à l'e-mail pour demander plus d'informations.", correct: false, info: "❌ Mauvais réflexe ! Répondre pourrait confirmer que votre adresse e-mail est active, rendant vos informations plus vulnérables. Supprimez l'e-mail." },
+                    { text: "Je me connecte directement sur le site web de ma banque via mon navigateur pour vérifier si la demande est réelle.", correct: true, info: "✅ Excellent ! C'est la bonne attitude. Toujours vérifier la source d'une demande directement sur le site officiel ou par un autre moyen de contact fiable." },
+                    { text: "Je transfère l'e-mail à un ami pour lui demander son avis.", correct: false, info: "❌ Mauvais réflexe ! Vous pourriez propager le risque à votre ami. Mieux vaut supprimer le message et signaler la tentative de hameçonnage à votre fournisseur de messagerie." }
+                ],
+                badge: 'Phishing Spotter',
+                answered: null
+            },
+            {
+                q: "Vous êtes sur le point d'installer une nouvelle application mobile. L'application demande l'accès à vos contacts, votre microphone et votre localisation. Que faites-vous ?",
+                options: [
+                    { text: "J'accepte toutes les autorisations pour que l'application fonctionne.", correct: false, info: "❌ Mauvais réflexe ! Accorder des autorisations non pertinentes peut compromettre vos données personnelles. Demandez-vous toujours pourquoi une application a besoin de ces informations." },
+                    { text: "Je refuse toutes les autorisations et je n'installe pas l'application.", correct: false, info: "❌ Mauvais réflexe ! Refuser sans réfléchir peut empêcher une application légitime de fonctionner. L'accès à la localisation, par exemple, est essentiel pour une application de navigation." },
+                    { text: "Je vérifie les autorisations demandées et je n'en accorde que celles qui sont essentielles au bon fonctionnement de l'application.", correct: true, info: "✅ Excellent ! C'est la bonne approche. Accordez le minimum d'autorisations nécessaires. Par exemple, une application de photos a besoin d'accéder à votre galerie, mais pas à vos contacts." },
+                    { text: "J'installe l'application, mais je la désinstalle plus tard si elle ne me plaît pas.", correct: false, info: "❌ Mauvais réflexe ! Même si vous la désinstallez, l'application a déjà pu accéder à vos données personnelles. Il est important d'évaluer les risques avant l'installation." }
+                ],
+                badge: 'Shield Builder',
+                answered: null
+            },
+            {
+                q: "Vous vous connectez à un réseau Wi-Fi public gratuit dans un café. Quelle est la meilleure action pour sécuriser vos données ?",
+                options: [
+                    { text: "Je ne fais rien, le Wi-Fi public est toujours sécurisé.", correct: false, info: "❌ Mauvais réflexe ! Les réseaux Wi-Fi publics sont souvent non sécurisés, ce qui rend vos données vulnérables aux interceptions. Ils sont une cible facile pour les pirates informatiques." },
+                    { text: "J'utilise un VPN (réseau privé virtuel) pour chiffrer ma connexion.", correct: true, info: "✅ Excellent ! L'utilisation d'un VPN est la meilleure pratique. Il chiffre vos données et les rend illisibles pour les cybercriminels, protégeant ainsi vos informations personnelles." },
+                    { text: "J'utilise le Wi-Fi pour consulter mes e-mails personnels et faire des achats en ligne.", correct: false, info: "❌ Mauvais réflexe ! Évitez d'accéder à des sites sensibles (banque, e-commerce, e-mail) sur un Wi-Fi public non sécurisé. Vos informations pourraient être volées." },
+                    { text: "Je change mon mot de passe immédiatement après m'être connecté au Wi-Fi public.", correct: false, info: "❌ Mauvais réflexe ! Changer votre mot de passe alors que votre connexion n'est pas sécurisée peut vous rendre plus vulnérable. Le mieux est d'utiliser un VPN." }
+                ],
+                badge: 'Shield Builder',
+                answered: null
+            },
+            {
+                q: "Pourquoi est-il important d'activer l'authentification à deux facteurs (MFA/2FA) ?",
+                options: [
+                    { text: "Pour avoir un mot de passe plus court.", correct: false, info: "❌ Faux ! L'authentification à deux facteurs ne raccourcit pas les mots de passe. Elle ajoute une couche de sécurité supplémentaire." },
+                    { text: "Pour ajouter une couche de sécurité supplémentaire, en exigeant un code en plus du mot de passe.", correct: true, info: "✅ Bonne réponse ! Le MFA (Multi-Factor Authentication) empêche les pirates d'accéder à votre compte même s'ils ont votre mot de passe." },
+                    { text: "Pour ne pas avoir besoin de mot de passe.", correct: false, info: "❌ Faux ! Le MFA est une étape en plus du mot de passe, pas un remplacement." },
+                    { text: "Pour que le site web envoie des spams.", correct: false, info: "❌ Faux ! Le MFA n'a rien à voir avec les spams." }
+                ],
+                badge: 'Shield Builder',
+                answered: null
+            },
+            {
+                q: "Un ami vous envoie un lien pour une 'super' promotion sur un site de e-commerce inconnu. Le lien semble légèrement différent du nom de la marque. Que faites-vous ?",
+                options: [
+                    { text: "Je clique sur le lien, si c'est mon ami qui l'a envoyé, c'est sûr.", correct: false, info: "❌ Mauvais réflexe ! Le compte de votre ami a peut-être été piraté. C'est une technique courante de 'phishing' pour vous inciter à cliquer." },
+                    { text: "Je copie le lien et le colle dans un e-mail pour le tester.", correct: false, info: "❌ Mauvais réflexe ! Coller le lien dans un e-mail peut propager le danger. Il est plus sûr de ne pas interagir du tout avec le lien." },
+                    { text: "Je tape manuellement le nom du site de la marque dans mon navigateur pour vérifier la promotion.", correct: true, info: "✅ Excellent ! C'est la bonne attitude. Toujours vérifier la légitimité d'une offre en se rendant directement sur le site officiel par ses propres moyens, sans passer par un lien suspect." },
+                    { text: "Je partage le lien sur les réseaux sociaux pour voir ce que mes amis en pensent.", correct: false, info: "❌ Mauvais réflexe ! Vous pourriez propager un lien dangereux et compromettre la sécurité de vos amis." }
+                ],
+                badge: 'Phishing Spotter',
+                answered: null
+            },
+            {
+                q: "Votre navigateur vous informe que le site que vous visitez n'a pas de connexion sécurisée (HTTPS). Que faites-vous ?",
+                options: [
+                    { text: "Je continue, c'est juste un avertissement.", correct: false, info: "❌ Mauvais réflexe ! Ignorer cet avertissement vous expose à des risques. Des données sensibles pourraient être interceptées par des attaquants." },
+                    { text: "Je quitte le site immédiatement.", correct: true, info: "✅ Excellent ! Une connexion non sécurisée signifie que vos données (mots de passe, informations de paiement) ne sont pas chiffrées et sont vulnérables." },
+                    { text: "Je rafraîchis la page pour voir si l'avertissement disparaît.", correct: false, info: "❌ Mauvais réflexe ! Cela ne changera rien à la sécurité du site. La connexion reste non sécurisée." },
+                    { text: "J'installe un plugin pour forcer la connexion en HTTPS.", correct: false, info: "❌ Mauvais réflexe ! Bien que des outils existent, il est plus sûr d'éviter complètement les sites non sécurisés. Un plugin pourrait ne pas fonctionner correctement et vous donner une fausse impression de sécurité." }
+                ],
+                badge: 'Shield Builder',
+                answered: null
+            },
+            {
+                q: "Quelle est la meilleure façon de gérer de nombreux mots de passe uniques et complexes ?",
+                options: [
+                    { text: "Les écrire sur un carnet en papier.", correct: false, info: "❌ Mauvais réflexe ! Un carnet peut être perdu ou volé. C'est une méthode peu sûre pour gérer un grand nombre de mots de passe." },
+                    { text: "Utiliser le même mot de passe facile à retenir pour tous mes comptes.", correct: false, info: "❌ Mauvais réflexe ! C'est l'une des pires pratiques de sécurité. Si un seul de vos comptes est compromis, tous les autres le seront aussi." },
+                    { text: "Stocker tous mes mots de passe dans un fichier texte sur mon ordinateur.", correct: false, info: "❌ Mauvais réflexe ! Un fichier texte n'est pas chiffré et est facilement accessible par des logiciels malveillants." },
+                    { text: "Utiliser un gestionnaire de mots de passe fiable et sécurisé.", correct: true, info: "✅ Excellent ! C'est la solution recommandée par les experts. Un gestionnaire de mots de passe stocke vos identifiants dans un coffre-fort chiffré, vous permettant d'utiliser des mots de passe uniques pour chaque site." }
+                ],
+                badge: 'Shield Builder',
+                answered: null
+            },
+        ];
+        
+        function updateProgressBar(step) {
+            const totalSteps = 3; 
+            const progress = (step / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function startMission1() {
+            agentName = agentNameInput.value.trim();
+            if (agentName === '') {
+                alert("Veuillez entrer votre nom d'agent pour commencer la mission.");
+                return;
+            }
+            introSection.classList.remove('active');
+            mission1Section.classList.add('active');
+            updateProgressBar(1);
+        }
+
+        function startMission2() {
+            mission1Section.classList.remove('active');
+            mission2Section.classList.add('active');
+            updateProgressBar(2);
+            loadQuizQuestion();
+        }
+
+        function submitPassword() {
+            const password = passwordInput.value;
+            if (password.length === 0) {
+                passwordInfo.innerHTML = "Veuillez entrer un mot de passe.";
+                playSound(failSound);
+                return;
+            }
+            
+            let score = 0;
+            let info = "";
+            let feedbackDetails = "";
+            const hasLowercase = /[a-z]/.test(password);
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSymbol = /[^a-zA-Z0-9]/.test(password);
+
+            let strongPoints = [];
+            let improvementPoints = [];
+
+            if (password.length >= 8) {
+                score += 20;
+                strongPoints.push("une bonne longueur");
+            } else {
+                improvementPoints.push("le mot de passe est trop court (il devrait faire au moins 8 caractères)");
+            }
+
+            if (password.length >= 12) {
+                score += 20;
+                strongPoints.push("une longueur excellente (12 caractères ou plus)");
+            }
+
+            if (hasLowercase) {
+                score += 10;
+                strongPoints.push("des minuscules");
+            } else {
+                improvementPoints.push("des minuscules");
+            }
+
+            if (hasUppercase) {
+                score += 10;
+                strongPoints.push("des majuscules");
+            } else {
+                improvementPoints.push("des majuscules");
+            }
+
+            if (hasNumber) {
+                score += 20;
+                strongPoints.push("des chiffres");
+            } else {
+                improvementPoints.push("des chiffres");
+            }
+
+            if (hasSymbol) {
+                score += 20;
+                strongPoints.push("des symboles");
+            } else {
+                improvementPoints.push("des symboles");
+            }
+
+            if (score >= 80) {
+                info = "🎉 Votre mot de passe est <strong>excellent</strong>. C'est un bon réflexe !";
+                barFill.style.backgroundColor = '#28a745';
+                barFill.style.width = '100%';
+                totalScore = 20;
+                badges.add('🔐');
+                playSound(successSound);
+                feedbackDetails = `**Points forts :** Vous avez utilisé une combinaison optimale de caractères pour créer un mot de passe extrêmement fort.`;
+            } else if (score >= 60) {
+                info = "👍 Votre mot de passe est <strong>fort</strong>.";
+                barFill.style.backgroundColor = '#ffc107';
+                barFill.style.width = '75%';
+                totalScore = 10;
+                playSound(successSound);
+            } else if (score >= 40) {
+                info = "⚠️ Votre mot de passe est <strong>moyen</strong>.";
+                barFill.style.backgroundColor = '#fd7e14';
+                barFill.style.width = '50%';
+                totalScore = 5;
+                playSound(failSound);
+            } else {
+                info = "❌ Votre mot de passe est <strong>faible</strong>.";
+                barFill.style.backgroundColor = '#dc3545';
+                barFill.style.width = '25%';
+                totalScore = 0;
+                playSound(failSound);
+            }
+
+            if (score < 80) {
+                let strongFeedback = strongPoints.length > 0 ? `**Points forts :** Votre mot de passe inclut ${strongPoints.join(', ')}.` : '';
+                let improvementFeedback = improvementPoints.length > 0 ? `**À améliorer :** Pour le rendre plus fort, ajoutez ${improvementPoints.join(', ')}.` : '';
+                feedbackDetails = `${strongFeedback}<br>${improvementFeedback}`;
+            }
+
+            const crackingTimes = `
+                <br>
+                <h3>Temps de craquage estimé :</h3>
+                <ul>
+                    <li><strong>Excellent</strong> : Des millions d'années</li>
+                    <li><strong>Fort</strong> : Des milliers d'années</li>
+                    <li><strong>Moyen</strong> : Quelques minutes</li>
+                    <li><strong>Faible</strong> : Quelques secondes</li>
+                </ul>
+            `;
+
+            passwordInfo.innerHTML = `${info} <br><br>${feedbackDetails} ${crackingTimes}`;
+            passwordTipsSection.classList.remove('hidden');
+            nextMission1Btn.style.display = 'inline-block';
+            submitPasswordBtn.disabled = false;
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                showFinalScore();
+                return;
+            }
+
+            const q = quizQuestions[currentQuizIndex];
+            let html = `<div class="question"><h3>${q.q}</h3><div class="options">`;
+            q.options.forEach((opt, i) => {
+                html += `<button onclick="checkQuizAnswer(${i})" ${q.answered !== null ? 'disabled' : ''}>${opt.text}</button>`;
+            });
+            html += `</div></div>`;
+            quizQuestionDiv.innerHTML = html;
+            quizQuestionDiv.querySelector('.question').classList.add('show');
+            
+            feedbackDiv.innerHTML = q.answered !== null ? `<div class="info-box ${q.options[q.answered].correct ? '' : 'incorrect'}">${q.options[q.answered].info}</div>` : '';
+            
+            if (q.answered !== null) {
+                const buttons = quizQuestionDiv.querySelectorAll('button');
+                buttons[q.options.findIndex(opt => opt.correct)].classList.add('correct');
+                if (!q.options[q.answered].correct) {
+                    buttons[q.answered].classList.add('incorrect');
+                }
+            }
+
+            updateButtons();
+        }
+
+        function checkQuizAnswer(selectedIndex) {
+            const q = quizQuestions[currentQuizIndex];
+            q.answered = selectedIndex;
+
+            const buttons = quizQuestionDiv.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+
+            if (q.options[selectedIndex].correct) {
+                if (!q.alreadyScored) {
+                    quizScore += 10;
+                    quizScore += 5;
+                    q.alreadyScored = true;
+                    if (q.badge === 'Phishing Spotter') {
+                        badges.add('🧠');
+                    } else if (q.badge === 'Shield Builder') {
+                        badges.add('🛡️');
+                    }
+                }
+                playSound(successSound);
+            } else {
+                playSound(failSound);
+            }
+
+            loadQuizQuestion();
+            updateButtons();
+        }
+        
+        function nextQuestion() {
+            if (currentQuizIndex < quizQuestions.length - 1) {
+                currentQuizIndex++;
+                loadQuizQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                loadQuizQuestion();
+            }
+        }
+        
+        function updateButtons() {
+            prevBtn.style.display = currentQuizIndex > 0 ? 'inline-block' : 'none';
+            
+            const q = quizQuestions[currentQuizIndex];
+            if (q && q.answered !== null) {
+                nextBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function showFinalScore() {
+            mission2Section.classList.remove('active');
+            finalScoreSection.classList.add('active');
+            updateProgressBar(3);
+            totalScore += quizScore;
+            finalScoreValue.innerText = totalScore;
+
+            if (totalScore > highScore) {
+                localStorage.setItem('highScore', totalScore);
+                highScore = totalScore;
+                highScoreValue.innerText = highScore;
+                scoreDescription.innerHTML = `🌟 **Nouveau meilleur score !** Félicitations, vous avez battu votre record !`;
+            } else {
+                highScoreValue.innerText = highScore;
+                let desc = "";
+                if (totalScore >= 60) {
+                    desc = "🏆 Vous êtes un maître de la cybersécurité ! Continuez à appliquer ces bons réflexes.";
+                } else if (totalScore >= 30) {
+                    desc = "👏 Vous avez de bonnes bases ! Quelques ajustements et vous serez un pro.";
+                } else {
+                    desc = "🧐 Il y a encore des choses à apprendre. N'hésitez pas à vous informer davantage pour sécuriser votre vie numérique.";
+                }
+                scoreDescription.innerText = desc;
+            }
+            
+            badgesContainer.innerHTML = Array.from(badges).join(' ');
+            if (badges.size === 0) {
+                badgesContainer.innerText = "Aucun badge obtenu. Continuez à vous entraîner !";
+            }
+
+            certifiedAgentName.innerText = agentName;
+            certifiedAgentScore.innerText = totalScore;
+            certificate.classList.remove('hidden');
+        }
+
+        window.onload = () => updateProgressBar(0);
+    </script>
+</body>
+</html>

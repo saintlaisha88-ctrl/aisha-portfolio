@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoWeb Quest</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #eaf7ea;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #2e7d32;
+    }
+    
+    .return-button-fixed {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 15px;
+        font-size: 14px;
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        z-index: 1000;
+    }
+
+    .return-button-fixed:hover {
+        background-color: #1b5e20;
+    }
+
+    .intro {
+      background-color: #ffffff;
+      border-left: 5px solid #2e7d32;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      font-size: 16px;
+      line-height: 1.5;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    
+    .start-quiz-btn, .next-question-btn, .prev-question-btn, .see-questions-btn {
+        padding: 12px 25px;
+        font-size: 18px;
+        background-color: #1e7e34; /* Darker green for better visibility */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .start-quiz-btn:hover, .next-question-btn:hover, .prev-question-btn:hover, .see-questions-btn:hover {
+        background-color: #155724; /* Even darker on hover */
+    }
+
+    .game-area {
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .game-area button {
+      margin: 10px;
+      padding: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 8px;
+      background-color: #fffbe6;
+      border: none;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    .game-area button:hover {
+      background-color: #b2e8c2;
+      transform: scale(1.02);
+    }
+    
+    .quiz-area {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        margin-top: 40px;
+        display: none;
+    }
+
+    .quiz-area.show {
+        opacity: 1;
+        display: block;
+    }
+
+    .quiz-area .question-box {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .options button:hover {
+        background-color: #e0e0e0;
+        transform: scale(1.01);
+    }
+
+    .options button.correct {
+        background-color: #d4edda;
+        border-color: #28a745;
+    }
+
+    .options button.incorrect {
+        background-color: #f8d7da;
+        border-color: #dc3545;
+    }
+    
+    .info-box {
+      margin-top: 20px;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 5px solid;
+      text-align: left;
+    }
+    
+    .info-box.correct {
+        background-color: #e8f5e9;
+        border-color: #2e7d32;
+        color: #1b5e20;
+    }
+
+    .info-box.incorrect {
+        background-color: #ffebee;
+        border-color: #c62828;
+        color: #b71c1c;
+    }
+    
+    #impact-message {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #2e7d32;
+      white-space: pre-line;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    #badges {
+      margin-top: 15px;
+      font-size: 24px;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+    }
+
+    #final-message {
+        margin-top: 30px;
+        font-size: 18px;
+        color: #2e7d32;
+        background-color: #d4edda;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+    
+    #final-message.show {
+        opacity: 1;
+    }
+    
+    .quiz-review {
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    .quiz-review h4 {
+        color: #2e7d32;
+        margin-top: 25px;
+    }
+
+    .quiz-review ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .quiz-review li {
+        padding: 5px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+    .quiz-review .correct-answer {
+        background-color: #e8f5e9;
+        border-left: 3px solid #2e7d32;
+    }
+  </style>
+</head>
+<body>
+    <a href="index.html" class="return-button-fixed">Retour au portfolio</a>
+  <h1>🌱 EcoWeb Quest</h1>
+
+  <div class="intro" id="intro-section">
+    <h2>🌳 Agissez pour un Web plus Vert</h2>
+    <p>Quand on pense à la pollution, on imagine souvent les plastiques, les voitures, les usines... Mais on oublie que nos <strong>actions numériques quotidiennes</strong> ont aussi un impact. Regarder une série, stocker des fichiers, envoyer des emails... tout cela consomme de l’énergie. 🌍 Alors, explorons ensemble les coulisses du web et découvrons comment devenir des éco-utilisateurs avertis.</p>
+    <div class="game-area" id="discovery-area">
+      <p>Clique sur les icônes pour découvrir leur impact écologique et gagner des points verts !</p>
+      <button onclick="revealImpact('streaming', this)">🎬 Streaming</button>
+      <button onclick="revealImpact('cloud', this)">☁️ Cloud Storage</button>
+      <button onclick="revealImpact('crypto', this)">💰 Crypto</button>
+      <button onclick="revealImpact('email', this)">📧 Email</button>
+      <div id="impact-message"></div>
+      <p>Points verts : <span id="score">0</span></p>
+      <div id="badges"></div>
+      <button class="start-quiz-btn" onclick="startQuiz()" style="display:none;">Démarrer le quiz</button>
+    </div>
+  </div>
+
+  <div class="quiz-area" id="quiz-area">
+    <h2>Testez vos connaissances !</h2>
+    <div id="quiz-content"></div>
+  </div>
+  
+  <div id="feedback-container"></div>
+  <div id="score-quiz"></div>
+  <button class="prev-question-btn" onclick="prevQuestion()" style="display: none;">← Précédent</button>
+  <button class="next-question-btn" onclick="nextQuestion()" style="display: none;">Question suivante →</button>
+  <button class="see-questions-btn" onclick="showAllQuestions()" style="display:none;">Voir les questions et les réponses</button>
+  <button onclick="resetGame()" style="margin-top: 20px;">🔄 Recommencer</button>
+
+  <div id="final-message"></div>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <script>
+    let score = 0;
+    let discoveredCount = 0;
+    let quizScore = 0;
+    
+    const facts = {
+      streaming: "Une heure de streaming HD = 55g de CO₂, soit une ampoule allumée pendant 6h. Netflix consomme plus d’énergie que certains pays !",
+      cloud: "Les data centers consomment 1% de l’électricité mondiale. Stocker 1 Go dans le cloud = 3h de lumière LED.",
+      crypto: "Le Bitcoin consomme plus d’énergie que l’Argentine. Certaines cryptos utilisent des systèmes plus verts comme Proof of Stake.",
+      email: "Un email avec pièce jointe = 50g de CO₂. Vider ta boîte mail peut réduire ton empreinte numérique !"
+    };
+
+    const badges = {
+      streaming: "🏅 EcoStreamer",
+      cloud: "🏅 Data Detoxer",
+      crypto: "🏅 Green Coder",
+      email: "🏅 Inbox Ninja"
+    };
+
+    const quizQuestions = [
+      {
+        q: "Quelle est la meilleure habitude pour réduire l'impact du streaming ?",
+        options: ["Regarder en 4K", "Passer en mode audio", "Acheter un plus grand écran", "Utiliser le Wi-Fi"],
+        answer: 1,
+        info: "L'audio ou la basse résolution consomment beaucoup moins de bande passante et d'énergie que le streaming haute définition. C'est un petit geste avec un grand impact !",
+        points: 20
+      },
+      {
+        q: "Comment réduire l'impact écologique des e-mails ?",
+        options: ["Laisser les spams", "Supprimer les e-mails inutiles", "Ajouter des pièces jointes lourdes", "Envoyer plus d'e-mails"],
+        answer: 1,
+        info: "Les e-mails stockés sur les serveurs consomment de l'énergie en permanence. Supprimer les messages inutiles (surtout les spams et les newsletters) réduit l'empreinte de manière significative.",
+        points: 20
+      },
+      {
+        q: "Quel est l'impact principal du 'Cloud Storage' ?",
+        options: ["La pollution des océans", "L'utilisation de serveurs qui consomment de l'énergie", "Le bruit des ordinateurs", "La surchauffe des téléphones"],
+        answer: 1,
+        info: "Les serveurs dans les data centers qui stockent nos données dans le cloud tournent 24h/24 et 7j/7 et consomment énormément d'électricité pour fonctionner et se refroidir.",
+        points: 20
+      },
+      {
+        q: "Pourquoi les datacenters nécessitent-ils beaucoup d'eau ?",
+        options: ["Pour les sanitaires", "Pour la climatisation", "Pour la production électrique", "Pour l'hydratation des employés"],
+        answer: 1,
+        info: "L'un des plus grands défis des datacenters est de maintenir leurs serveurs à basse température. La climatisation et les systèmes de refroidissement par eau consomment d'énormes quantités d'eau, ce qui représente un coût environnemental important.",
+        points: 20
+      },
+      {
+        q: "Quel navigateur web est considéré comme plus éco-responsable ?",
+        options: ["Google Chrome", "Mozilla Firefox", "Safari", "L'éco-responsabilité dépend des habitudes de l'utilisateur"],
+        answer: 3,
+        info: "Bien que certains navigateurs puissent avoir des modes d'économie d'énergie, l'impact le plus significatif vient de l'utilisateur : éviter d'ouvrir trop d'onglets, utiliser des extensions pour bloquer les publicités, et optimiser les réglages pour réduire la consommation d'énergie.",
+        points: 20
+      }
+    ];
+
+    const introSection = document.getElementById('intro-section');
+    const discoveryArea = document.getElementById('discovery-area');
+    const quizArea = document.getElementById('quiz-area');
+    const quizContent = document.getElementById('quiz-content');
+    const feedbackContainer = document.getElementById('feedback-container');
+    const scoreDiscovery = document.getElementById('score');
+    const scoreQuiz = document.getElementById('score-quiz');
+    const nextBtn = document.querySelector('.next-question-btn');
+    const prevBtn = document.querySelector('.prev-question-btn');
+    const finalMessage = document.getElementById('final-message');
+    const seeQuestionsBtn = document.querySelector('.see-questions-btn');
+    const startQuizBtn = document.querySelector('.start-quiz-btn');
+    const resetButton = document.querySelector('button[onclick="resetGame()"]');
+    
+    let current = 0;
+    
+    function revealImpact(type, button) {
+      if (button.disabled) return;
+      
+      let message = "";
+      let fact = facts[type];
+      switch(type) {
+        case 'streaming':
+          message = "🎬 Le streaming HD consomme beaucoup d'énergie. Préfère le mode audio ou basse résolution.";
+          break;
+        case 'cloud':
+          message = "☁️ Le stockage cloud utilise des data centers gourmands en énergie. Supprime les fichiers inutiles.";
+          break;
+        case 'crypto':
+          message = "💰 Le minage de crypto est très polluant. Renseigne-toi sur les cryptos vertes.";
+          break;
+        case 'email':
+          message = "📧 Les emails inutiles encombrent les serveurs. Vide ta boîte régulièrement.";
+          break;
+      }
+
+      score += 10;
+      document.getElementById("impact-message").innerText = message + "\n💡 " + fact;
+      scoreDiscovery.innerText = score;
+      document.getElementById("badges").innerHTML += badges[type] + " ";
+      
+      button.disabled = true;
+      discoveredCount++;
+      
+      if (discoveredCount === Object.keys(facts).length) {
+          startQuizBtn.style.display = 'block';
+      }
+    }
+
+    function startQuiz() {
+      introSection.style.display = 'none';
+      discoveryArea.style.display = 'none';
+      quizArea.style.display = 'block';
+      quizArea.classList.add('show');
+      resetButton.style.display = 'block';
+      loadQuestion();
+    }
+    
+    function loadQuestion() {
+      if (current >= quizQuestions.length) {
+        showFinalScore();
+        return;
+      }
+      const q = quizQuestions[current];
+      let html = `<div class="question-box"><h3>${q.q}</h3><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button onclick="checkAnswer(${i})">${opt}</button>`;
+      });
+      html += `</div></div>`;
+      quizContent.innerHTML = html;
+      feedbackContainer.innerHTML = '';
+      scoreQuiz.innerText = `Points : ${quizScore}`;
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = current > 0 ? 'inline-block' : 'none';
+
+      if (q.answeredIndex !== undefined) {
+          checkAnswer(q.answeredIndex);
+          nextBtn.style.display = 'inline-block';
+      }
+    }
+    
+    function checkAnswer(selectedIndex) {
+      const q = quizQuestions[current];
+      const buttons = quizContent.querySelectorAll('button');
+      const correct = q.answer;
+      
+      buttons.forEach(button => button.disabled = true);
+      
+      let feedbackHTML = '';
+      if (selectedIndex === correct) {
+        if (q.answeredIndex === undefined) {
+            quizScore += q.points;
+        }
+        buttons[selectedIndex].classList.add('correct');
+        feedbackHTML = `<div class="info-box correct">✅ Bonne réponse ! ${q.info}</div>`;
+      } else {
+        buttons[selectedIndex].classList.add('incorrect');
+        buttons[correct].classList.add('correct');
+        feedbackHTML = `<div class="info-box incorrect">❌ Oups ! Ce n'était pas la bonne réponse. ${q.info}</div>`;
+      }
+      
+      q.answeredIndex = selectedIndex;
+      
+      feedbackContainer.innerHTML = feedbackHTML;
+      nextBtn.style.display = 'inline-block';
+      scoreQuiz.innerText = `Points : ${quizScore}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      loadQuestion();
+    }
+    
+    function prevQuestion() {
+      current--;
+      loadQuestion();
+    }
+
+    function showFinalScore() {
+      quizArea.innerHTML = "<h2>🎉 Quiz Terminé !</h2>";
+      feedbackContainer.innerHTML = '';
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = 'none';
+      scoreQuiz.innerText = `Score final : ${quizScore} points`;
+      seeQuestionsBtn.style.display = 'inline-block';
+      
+      const totalPossibleScore = quizQuestions.reduce((sum, q) => sum + q.points, 0);
+      if (quizScore === totalPossibleScore) {
+          launchConfetti();
+      }
+      
+      finalMessage.style.display = 'block';
+      finalMessage.classList.add('show');
+      
+      let message = "";
+      if (quizScore >= totalPossibleScore * 0.8) {
+          message = `🎉 Félicitations ! Vous êtes un véritable <strong>Héros de l'EcoWeb</strong> avec ${quizScore} points ! Continuez à appliquer ces gestes pour un numérique plus vert.`;
+      } else if (quizScore >= totalPossibleScore * 0.5) {
+          message = `👍 Super ! Vous êtes sur la bonne voie avec un score de ${quizScore} points. Chaque geste compte !`;
+      } else {
+          message = `🧐 Vous avez un score de ${quizScore} points. Il y a encore des choses à apprendre. N'hésitez pas à vous informer davantage !`;
+      }
+      finalMessage.innerHTML = message;
+      
+      resetButton.style.display = 'block';
+    }
+    
+    function showAllQuestions() {
+      quizArea.style.display = 'none';
+      feedbackContainer.style.display = 'none';
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = 'none';
+      seeQuestionsBtn.style.display = 'none';
+      scoreQuiz.style.display = 'none';
+      finalMessage.innerHTML = '<h2>Revue des questions et réponses</h2><div class="quiz-review"></div>';
+      finalMessage.style.display = 'block';
+      const reviewContainer = finalMessage.querySelector('.quiz-review');
+      
+      quizQuestions.forEach((q, index) => {
+        let html = `<h4>Question ${index + 1} : ${q.q}</h4><ul>`;
+        q.options.forEach((opt, optIndex) => {
+          const isCorrect = optIndex === q.answer;
+          html += `<li class="${isCorrect ? 'correct-answer' : ''}">${opt}</li>`;
+        });
+        html += `</ul><div class="info-box">${q.info}</div>`;
+        reviewContainer.innerHTML += html;
+      });
+      
+      finalMessage.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetGame() {
+      current = 0;
+      quizScore = 0;
+      score = 0;
+      discoveredCount = 0;
+      quizQuestions.forEach(q => q.answeredIndex = undefined);
+      introSection.style.display = 'block';
+      discoveryArea.style.display = 'block';
+      quizArea.style.display = 'none';
+      feedbackContainer.style.display = 'block';
+      quizArea.innerHTML = '<h2>Testez vos connaissances !</h2><div id="quiz-content"></div>';
+      feedbackContainer.innerHTML = '';
+      scoreDiscovery.innerText = '0';
+      scoreQuiz.innerText = 'Points : 0';
+      finalMessage.innerHTML = '';
+      finalMessage.style.display = 'none';
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = 'none';
+      seeQuestionsBtn.style.display = 'none';
+      startQuizBtn.style.display = 'none';
+      document.querySelectorAll('.game-area button').forEach(btn => btn.disabled = false);
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 100,
+          color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+          tilt: Math.floor(Math.random() * 10) - 5
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        });
+        update();
+      }
+
+      function update() {
+        particles.forEach(p => {
+          p.y += 2;
+          p.x += Math.sin(p.d);
+          if (p.y > canvas.height) p.y = 0;
+        });
+      }
+
+      let interval = setInterval(draw, 30);
+      setTimeout(() => {
+        clearInterval(interval);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
