@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Cycle Sync – Quiz Santé Féminine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fff0f5;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .return-button-fixed {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 15px;
+        font-size: 14px;
+        background-color: #c2185b;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        z-index: 1000;
+    }
+
+    .return-button-fixed:hover {
+        background-color: #880e4f;
+    }
+
+    h1 {
+      color: #c2185b;
+    }
+
+    .intro {
+      background-color: #ffe4ec;
+      border-left: 5px solid #c2185b;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 700px;
+      font-size: 16px;
+      line-height: 1.6;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    .question {
+      margin: 20px auto;
+      padding: 15px;
+      background-color: #fff8fb;
+      border-radius: 10px;
+      max-width: 600px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .question.active {
+      display: block;
+    }
+    
+    .start-button, .next-question-btn, .prev-question-btn, .see-questions-btn {
+        padding: 12px 25px;
+        font-size: 18px;
+        background-color: #c2185b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 20px;
+    }
+
+    .start-button:hover, .next-question-btn:hover, .prev-question-btn:hover, .see-questions-btn:hover {
+        background-color: #880e4f;
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #c2185b;
+      background-color: #f8bbd0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .options button:hover {
+      background-color: #f48fb1;
+    }
+
+    .options button.correct {
+        background-color: #a5d6a7;
+        border-color: #2e7d32;
+        color: #1b5e20;
+    }
+
+    .options button.incorrect {
+        background-color: #ef9a9a;
+        border-color: #c62828;
+        color: #b71c1c;
+    }
+
+    .info-box {
+      margin-top: 20px;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 5px solid;
+      text-align: left;
+    }
+    
+    .info-box.correct {
+        background-color: #e8f5e9;
+        border-color: #2e7d32;
+        color: #1b5e20;
+    }
+
+    .info-box.incorrect {
+        background-color: #ffebee;
+        border-color: #c62828;
+        color: #b71c1c;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #880e4f;
+    }
+
+    #score {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    #badges {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+    }
+
+    .final-message {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #6a1b9a;
+      background-color: #f3e5f5;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .quiz-review {
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    .quiz-review h4 {
+        color: #c2185b;
+        margin-top: 25px;
+    }
+
+    .quiz-review ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .quiz-review li {
+        padding: 5px;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
+
+    .quiz-review .correct-answer {
+        background-color: #e8f5e9;
+        border-left: 3px solid #2e7d32;
+    }
+  </style>
+</head>
+<body>
+    <a href="index.html" class="return-button-fixed">Retour au portfolio</a>
+  <h1>🌸 Cycle Sync – Quiz Santé Féminine</h1>
+
+  <div class="intro" id="intro-section">
+    <h2>💖 Apprendre, comprendre, s’écouter</h2>
+    <p>La santé menstruelle est trop souvent ignorée, mal comprise ou minimisée. Le TDPM (Trouble dysphorique prémenstruel), l’endométriose et les liens entre hormones et santé mentale méritent d’être connus et reconnus.</p>
+    <p>Ce mini-jeu est là pour t’aider à mieux comprendre ton corps, à briser les tabous, et à te sentir puissante dans ton parcours santé. Tu es légitime. Tu es forte. Tu es informée.</p>
+
+    <hr>
+
+    <h3>Qu'est-ce que l'endométriose ?</h3>
+    <p>L'endométriose est une maladie gynécologique chronique qui touche environ **une femme sur dix** en âge de procréer. Elle se caractérise par la présence de tissu similaire à la muqueuse utérine en dehors de l'utérus. Cette maladie peut provoquer des douleurs intenses et invalidantes, notamment pendant les règles, les rapports sexuels, ou lors de la défécation. Elle est également la première cause d'infertilité en France et dans le monde, avec un diagnostic qui prend en moyenne **7 à 12 ans** après l'apparition des symptômes.</p>
+
+    <h3>Le Trouble Dysphorique Prémenstruel (TDPM)</h3>
+    <p>Le TDPM est une forme grave du syndrome prémenstruel. Il affecte entre **3 et 8 %** des personnes menstruées. Contrairement au syndrome prémenstruel classique, le TDPM se manifeste par des symptômes émotionnels et physiques tellement sévères qu'ils peuvent sérieusement perturber la vie quotidienne. Parmi les symptômes, on retrouve la dépression, l'anxiété, une irritabilité extrême, des sautes d'humeur, et une fatigue intense.</p>
+
+    <h3>La santé mentale des femmes</h3>
+    <p>La santé mentale est un aspect souvent sous-estimé de la santé féminine. Les femmes sont deux fois plus susceptibles que les hommes de souffrir de dépression, et les troubles de l'humeur comme le TDPM ou la dépression post-partum sont des réalités pour des millions de femmes. La douleur chronique liée à des maladies comme l'endométriose peut également avoir un impact significatif sur la santé mentale, ce qui souligne l'importance d'une approche globale pour le bien-être féminin.</p>
+    <button class="start-button" onclick="startQuiz()">Démarrer le quiz</button>
+  </div>
+
+  <div id="quiz-container" style="display:none;"></div>
+  <div id="feedback-container"></div>
+  <div id="score"></div>
+  <button class="prev-question-btn" onclick="prevQuestion()" style="display: none;">← Précédent</button>
+  <button class="next-question-btn" onclick="nextQuestion()" style="display: none;">Question suivante →</button>
+  <button class="see-questions-btn" onclick="showAllQuestions()" style="display:none;">Voir les questions et les réponses</button>
+  <button onclick="resetQuiz()" style="display:none;">🔄 Recommencer</button>
+  <canvas id="confetti-canvas"></canvas>
+  <div class="final-message" id="final-message"></div>
+
+  <script>
+    const questions = [
+      { 
+          q: "Qu'est-ce que le TDPM ?", 
+          options: ["Trouble digestif", "Infection urinaire", "Migraine hormonale", "Forme sévère du syndrome prémenstruel avec symptômes émotionnels intenses"], 
+          answer: 3,
+          info: "Le TDPM (Trouble Dysphorique Prémenstruel) est une forme plus grave du syndrome prémenstruel, caractérisée par des symptômes émotionnels et physiques qui peuvent être très invalidants et perturber la vie quotidienne."
+      },
+      { 
+          q: "Quelle est une cause fréquente de l'endométriose ?", 
+          options: ["Hygiène menstruelle", "Fer dans le sang", "Infection bactérienne", "Croissance de tissu semblable à l'endomètre en dehors de l'utérus"], 
+          answer: 3,
+          info: "L'endométriose est une maladie chronique où du tissu semblable à celui qui tapisse l'utérus se développe à l'extérieur, souvent sur les ovaires, les trompes de Fallope, ou d'autres organes pelviens."
+      },
+      { 
+          q: "Quel symptôme est associé à la phase lutéale ?", 
+          options: ["Absence de règles", "Ovulation", "Énergie élevée", "Fatigue, irritabilité et fringales"], 
+          answer: 3,
+          info: "La phase lutéale suit l'ovulation et dure jusqu'aux règles. Les symptômes comme la fatigue, l'irritabilité et les fringales y sont courants en raison des changements hormonaux."
+      },
+      { 
+          q: "Comment soulager les symptômes du TDPM ?", 
+          options: ["Antibiotiques", "Sucre", "Éviter le sport", "Thérapie cognitivo-comportementale + suivi médical"], 
+          answer: 3,
+          info: "La thérapie cognitivo-comportementale et un suivi médical (qui peut inclure des antidépresseurs ou des contraceptifs) sont des approches efficaces pour gérer les symptômes du TDPM."
+      },
+      { 
+          q: "Quel lien entre santé mentale et TDPM ?", 
+          options: ["Aucun lien", "Amélioration mentale", "Influence sur fertilité", "Aggravation de l’anxiété et dépression"], 
+          answer: 3,
+          info: "Le TDPM est intrinsèquement lié à la santé mentale, provoquant des symptômes graves tels que la dépression, l'anxiété et l'irritabilité extrême juste avant les règles."
+      },
+      { 
+          q: "Pourquoi l'endométriose est-elle souvent diagnostiquée tard ?", 
+          options: ["Génétique", "Symptômes minimisés", "Pas de douleur", "Facile à détecter"], 
+          answer: 1,
+          info: "Malheureusement, les symptômes de l'endométriose sont souvent banalisés comme 'douleurs de règles normales', ce qui retarde le diagnostic de plusieurs années."
+      },
+      { 
+          q: "Symptôme courant de l'endométriose ?", 
+          options: ["Douleurs pelviennes", "Vision floue", "Fièvre", "Perte de cheveux"], 
+          answer: 0,
+          info: "Les douleurs pelviennes chroniques, souvent invalidantes, sont le symptôme le plus fréquent de l'endométriose."
+      },
+      { 
+          q: "Hormone liée au TDPM ?", 
+          options: ["Progestérone", "Testostérone", "Adrénaline", "Insuline"], 
+          answer: 0,
+          info: "Les fluctuations de la progestérone et de l'œstrogène dans la phase lutéale sont des facteurs clés qui contribuent aux symptômes du TDPM."
+      },
+      { 
+          q: "Outil utile pour suivre son cycle ?", 
+          options: ["Podomètre", "Tensiomètre", "Thermomètre", "Application de suivi"], 
+          answer: 3,
+          info: "Utiliser une application de suivi de cycle peut vous aider à identifier des schémas, à mieux comprendre votre corps et à communiquer ces informations à votre médecin."
+      },
+      { 
+          q: "Effet du TDPM sur la vie quotidienne ?", 
+          options: ["Relations et travail affectés", "Concentration améliorée", "Sommeil réparateur", "Productivité accrue"], 
+          answer: 0,
+          info: "Les symptômes sévères du TDPM peuvent avoir un impact significatif sur les relations personnelles, la vie professionnelle et la capacité à gérer les activités quotidiennes."
+      },
+      { 
+          q: "Pourquoi la recherche sur la santé féminine est insuffisante ?", 
+          options: ["Douleurs bien comprises", "Symptômes universels", "Femmes surreprésentées", "Spécificités féminines négligées"], 
+          answer: 3,
+          info: "Historiquement, la recherche médicale s'est souvent concentrée sur le corps masculin, négligeant les spécificités de la santé féminine, ce qui a conduit à des lacunes dans la connaissance de maladies comme l'endométriose ou le TDPM."
+      },
+      { 
+          q: "Qui peut diagnostiquer le TDPM ?", 
+          options: ["Cardiologue", "Dermatologue", "Ophtalmologue", "Gynécologue ou psychiatre"], 
+          answer: 3,
+          info: "Le TDPM est un trouble psychiatrique et hormonal. Il est donc diagnostiqué par un psychiatre ou un gynécologue spécialisé après l'évaluation des symptômes."
+      },
+      { 
+          q: "Moyen naturel pour soulager le TDPM ?", 
+          options: ["Jeûne", "Isolement", "Méditation et sport doux", "Café"], 
+          answer: 2,
+          info: "La méditation, le yoga, la marche et une alimentation saine peuvent aider à réduire la sévérité des symptômes émotionnels et physiques du TDPM."
+      },
+      { 
+          q: "Impact de l'endométriose sur la fertilité ?", 
+          options: ["Augmente", "Grossesse multiple", "Réduit les chances", "Aucun effet"], 
+          answer: 2,
+          info: "L'endométriose est l'une des principales causes d'infertilité. La croissance du tissu en dehors de l'utérus peut bloquer les trompes de Fallope ou endommager les ovaires."
+      },
+      { 
+          q: "Pourquoi parler de santé menstruelle ?", 
+          options: ["Ignorer les symptômes", "Éviter les soins", "Favoriser l’éducation et le soutien", "Créer des tabous"], 
+          answer: 2,
+          info: "Parler ouvertement de la santé menstruelle est crucial pour briser les tabous, encourager les gens à chercher de l'aide médicale et favoriser une meilleure éducation sur ces sujets."
+      },
+      { 
+          q: "Quel est l'âge moyen d'apparition du TDPM ?", 
+          options: ["16 ans", "20 ans", "26 ans", "35 ans"], 
+          answer: 2,
+          info: "L'âge moyen d'apparition du TDPM est de 26 ans, mais il peut se manifester à n'importe quel moment après les premières règles."
+      },
+      { 
+          q: "Comment les femmes se perçoivent-elles en général en termes de santé par rapport aux hommes ?", 
+          options: ["De façon plus positive", "De façon moins positive", "De façon similaire", "Aucune donnée disponible"], 
+          answer: 1,
+          info: "Plusieurs études montrent que les femmes ont tendance à avoir une perception plus négative de leur propre santé que les hommes, en partie à cause des problèmes de santé liés au cycle menstruel et aux maladies chroniques."
+      },
+      { 
+          q: "Quelle est la cause principale de mortalité chez les femmes ?", 
+          options: ["Cancer du sein", "Maladies auto-immunes", "Maladies cardiovasculaires", "Diabète"], 
+          answer: 2,
+          info: "Les maladies cardiovasculaires, y compris les crises cardiaques et les accidents vasculaires cérébraux, sont la principale cause de mortalité chez les femmes."
+      }
+    ];
+
+    const introSection = document.getElementById('intro-section');
+    const quizContainer = document.getElementById('quiz-container');
+    const feedbackContainer = document.getElementById('feedback-container');
+    const scoreDisplay = document.getElementById('score');
+    const nextBtn = document.querySelector('.next-question-btn');
+    const prevBtn = document.querySelector('.prev-question-btn');
+    const finalMessage = document.getElementById('final-message');
+    const resetButton = document.querySelector('button[onclick="resetQuiz()"]');
+    const seeQuestionsBtn = document.querySelector('.see-questions-btn');
+    
+    let current = 0;
+    let score = 0;
+    
+    function startQuiz() {
+        introSection.style.display = 'none';
+        quizContainer.style.display = 'block';
+        resetButton.style.display = 'block';
+        loadQuestion();
+    }
+    
+    function loadQuestion() {
+      if (current >= questions.length) {
+        showFinalScore();
+        return;
+      }
+
+      const q = questions[current];
+      let html = `<div class="question active"><h3>${q.q}</h3><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `<button onclick="checkAnswer(${i})">${opt}</button>`;
+      });
+      html += `</div></div>`;
+      quizContainer.innerHTML = html;
+      feedbackContainer.innerHTML = '';
+      scoreDisplay.innerText = `Score : ${score} / ${questions.length}`;
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = current > 0 ? 'inline-block' : 'none';
+
+      if (q.answeredIndex !== undefined) {
+          checkAnswer(q.answeredIndex);
+          nextBtn.style.display = 'inline-block';
+      }
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[current];
+      const correct = q.answer;
+      const buttons = quizContainer.querySelectorAll('button');
+      
+      buttons.forEach(button => button.disabled = true);
+      
+      let feedbackHTML = '';
+      if (selected === correct) {
+        if (q.answeredIndex === undefined) {
+          score++;
+        }
+        buttons[selected].classList.add('correct');
+        feedbackHTML = `<div class="info-box correct">✅ Bonne réponse ! ${q.info}</div>`;
+      } else {
+        buttons[selected].classList.add('incorrect');
+        buttons[correct].classList.add('correct');
+        feedbackHTML = `<div class="info-box incorrect">❌ Oups ! Ce n'était pas la bonne réponse. ${q.info}</div>`;
+      }
+      
+      q.answeredIndex = selected;
+
+      feedbackContainer.innerHTML = feedbackHTML;
+      nextBtn.style.display = 'inline-block';
+      scoreDisplay.innerText = `Score : ${score} / ${questions.length}`;
+    }
+
+    function nextQuestion() {
+      current++;
+      loadQuestion();
+    }
+    
+    function prevQuestion() {
+        current--;
+        loadQuestion();
+    }
+    
+    function showFinalScore() {
+        quizContainer.innerHTML = "<h2>🎉 Bravo ! Tu as terminé le quiz !</h2>";
+        feedbackContainer.innerHTML = '';
+        nextBtn.style.display = 'none';
+        prevBtn.style.display = 'none';
+        scoreDisplay.innerText = `Score final : ${score} / ${questions.length}`;
+        seeQuestionsBtn.style.display = 'inline-block';
+        if (score === questions.length) launchConfetti();
+        finalMessage.innerHTML = `
+          <h3>✨ Félicitations !</h3>
+          <p>Tu as terminé le quiz avec un score de **${score}** sur **${questions.length}**.</p>
+          <p>La santé des femmes est souvent négligée. Pourtant, il est essentiel de parler de ces sujets et de briser le tabou qui les entoure. Voici quelques faits qui montrent à quel point ces conditions sont répandues :</p>
+          <ul style="text-align:left; max-width:600px; margin: 0 auto; font-size: 16px;">
+            <li>**TDPM (Trouble Dysphorique Prémenstruel)** : Entre 3 et 8 % des femmes menstruées sont touchées par ce trouble qui provoque des symptômes émotionnels et physiques graves, perturbant le quotidien.</li>
+            <li>**Endométriose** : Cette maladie inflammatoire chronique affecte environ 1 femme sur 10 en âge de procréer à travers le monde, soit environ 190 millions de personnes.</li>
+          </ul>
+          <p>Ensemble, nous pouvons accroître la sensibilisation et apporter du soutien. N'hésitez pas à partager vos résultats et à encourager les autres à en apprendre davantage sur ces sujets importants. 💪</p>
+        `;
+    }
+
+    function showAllQuestions() {
+      quizContainer.style.display = 'none';
+      feedbackContainer.style.display = 'none';
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = 'none';
+      seeQuestionsBtn.style.display = 'none';
+      scoreDisplay.style.display = 'none';
+      finalMessage.innerHTML = '<h2>Revue des questions et réponses</h2><div class="quiz-review"></div>';
+      const reviewContainer = finalMessage.querySelector('.quiz-review');
+      
+      questions.forEach((q, index) => {
+        let html = `<h4>Question ${index + 1} : ${q.q}</h4><ul>`;
+        q.options.forEach((opt, optIndex) => {
+          const isCorrect = optIndex === q.answer;
+          html += `<li class="${isCorrect ? 'correct-answer' : ''}">${opt}</li>`;
+        });
+        html += `</ul><div class="info-box">${q.info}</div>`;
+        reviewContainer.innerHTML += html;
+      });
+      
+      finalMessage.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      current = 0;
+      score = 0;
+      questions.forEach(q => q.answeredIndex = undefined);
+      introSection.style.display = 'block';
+      quizContainer.style.display = 'none';
+      feedbackContainer.style.display = 'none';
+      quizContainer.innerHTML = '';
+      feedbackContainer.innerHTML = '';
+      scoreDisplay.innerText = '';
+      finalMessage.innerHTML = '';
+      nextBtn.style.display = 'none';
+      prevBtn.style.display = 'none';
+      resetButton.style.display = 'none';
+      seeQuestionsBtn.style.display = 'none';
+      scoreDisplay.style.display = 'block';
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 100,
+          color: `hsl(${Math.random() * 360}, 80%, 85%)`,
+          tilt: Math.floor(Math.random() * 10) - 5
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        });
+        update();
+      }
+
+      function update() {
+        particles.forEach(p => {
+          p.y += 2;
+          p.x += Math.sin(p.d);
+          if (p.y > canvas.height) p.y = 0;
+        });
+      }
+
+      let interval = setInterval(draw, 30);
+      setTimeout(() => {
+        clearInterval(interval);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
